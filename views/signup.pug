@@ -1,0 +1,24 @@
+extends signup_layout
+
+block content
+  #main_content
+    h1 用户注册
+    form#register_form(action='/signup', method='post')
+      input#username(name='username', type='text', placeholder='用户名', maxlength='15', value=user.username)
+      p.tips 用户名为6~18位英文字母、数字或下划线，必须以英文字母开头
+      p#err_username.error!= error.username
+
+      input#studentID(name='studentID', type='text', placeholder='学号', maxlength='8', value=user.studentID)
+      p.tips 学号为8位数字，不能以0开头
+      p#err_studentID.error!= error.studentID
+
+      input#telephone(name='telephone', type='telephone', placeholder='电话', maxlength='11', value=user.telephone)
+      p.tips 电话为11位数字，不能以0开头
+      p#err_telephone.error!= error.telephone
+
+      input#email(name='email', type='email', placeholder='邮箱', value=user.email)
+      p.tips 请填写您常用的邮箱
+      p#err_email.error!= error.email
+      
+      button#reset(type='reset') 重置
+      button#register(type='submit') 注册

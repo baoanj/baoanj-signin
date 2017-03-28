@@ -1,0 +1,23 @@
+extends detail_layout
+
+block content
+  #main_content
+    h1 用户详情
+    #textContent
+      div
+        p 用户名 ：
+        p#username!= user.username
+      hr
+      div
+        p 学号 ：
+        p#studentID!= user.studentID
+      hr
+      div
+        p 电话 ：
+        p#telephone!= user.telephone
+      hr
+      div
+        p 邮箱 ：
+        p#email!= user.email
+    button.back_button
+      a(href='/signout', title='back') 退出登录
