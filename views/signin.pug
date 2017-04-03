@@ -1,0 +1,16 @@
+extends signin_layout
+
+block content
+  #main_content
+    h1 用户登录
+    form#login_form(action='/signin', method='post')
+      input#username(name='username', type='text', placeholder='用户名', maxlength='18', value=user.username)
+      p#err_username.error!= error.username
+
+      input#password(name='password', type='password', placeholder='密码', maxlength='12', value=user.password)
+      p#err_password.error!= error.password
+
+      button#reset(type='reset') 重置
+      button#login(type='submit') 登录
+    p#switch 还没有账号？
+      a(href='/signup', title='注册') 去注册

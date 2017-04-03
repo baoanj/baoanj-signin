@@ -9,15 +9,7 @@ block content
         p#username!= user.username
       hr
       div
-        p 学号 ：
-        p#studentID!= user.studentID
-      hr
-      div
-        p 电话 ：
-        p#telephone!= user.telephone
-      hr
-      div
         p 邮箱 ：
         p#email!= user.email
-    button.back_button
-      a(href='/signout', title='back') 退出登录
+    p#switch
+      a(href='/signout', title='退出登录') 退出登录
