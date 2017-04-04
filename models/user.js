@@ -1,3 +1,5 @@
+var bcrypt = require('bcrypt');
+
 module.exports = function(db) {
   var validator = require('../public/javascripts/validator');
 
@@ -67,9 +69,18 @@ module.exports = function(db) {
       var that = this;
       this.findAllUser(function(users) {
         var err_login = null;
-        if (!that.isUsernameExisted(users, user.username)) err_login = { username: '用户名不存在' };
-        else if (users[user.username].password != user.password) err_login = { password: '密码错误' };
-        callback(err_login);
+        if (!that.isUsernameExisted(users, user.username)) {
+        	err_login = { username: '用户名不存在' };
+        	callback(err_login);
+        	return;
+        }
+        bcrypt.compare(user.password, users[user.username].password).then(function(res) {
+          if (!res) {
+            err_login = { password: '密码错误' };
+          }
+          callback(err_login);
+          return;
+        });
       });
     }
   };

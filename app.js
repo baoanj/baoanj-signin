@@ -6,7 +6,7 @@
   var cookieParser = require('cookie-parser');
   var bodyParser = require('body-parser');
   var session = require('express-session');
-  //var FileStore = require('session-file-store')(session);
+  const MongoStore = require('connect-mongo')(session);
   var debug = require('debug')('baoanj-signin:app');
   var index = require('./routes/index')(db);
 
@@ -23,6 +23,10 @@
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(cookieParser());
   app.use(session({
+    store: new MongoStore({
+      url: 'mongodb://127.0.0.1:27017/signin',
+      ttl: 24 * 60 * 60
+    }),
     resave: true,
     saveUninitialized: true,
     secret: 'modern web programming'

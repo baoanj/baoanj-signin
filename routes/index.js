@@ -2,9 +2,8 @@ module.exports = function(db) {
   var express = require('express');
   var router = express.Router();
   var debug = require('debug')('baoanj-signin:index');
+  var bcrypt = require('bcrypt');
   var userManager = require('../models/user')(db);
-
-  var currentUser = null; // session未解决
 
   router.get('/signup', function(req, res, next) {
     if (req.session.user) {
@@ -21,10 +20,14 @@ module.exports = function(db) {
         if (Object.keys(err).length > 0) {
           throw new Error(JSON.stringify(err)); // 回调函数里throw的error外部是catch不到的
         }
-        req.session.user = user;
-        userManager.insertUser(user, function(result) {
-          console.log(result.username + ' registed successfully!');
-          res.redirect('/detail');
+        bcrypt.hash(user.password, 10).then(function(hash) {
+          user.password = hash;
+          delete user.repeatpass;
+          req.session.user = user;
+          userManager.insertUser(user, function(result) {
+            console.log(user.username + ' registed successfully!');
+            res.redirect('/detail');
+          });
         });
       } catch (err) {
         res.render('signup', { title: '用户注册', user: user, error: JSON.parse(err.message) });
@@ -81,8 +84,9 @@ module.exports = function(db) {
   });
 
   router.get('/signout', function(req, res, next) {
-    delete req.session.user;
-    res.redirect('/signin');
+    req.session.destroy(function(err) {
+      res.redirect('/signin');
+    });
   });
 
   return router;
