@@ -1,5 +1,7 @@
 /*--------客户端与服务端共用的表单校验--------------*/
 var validator = {
+  password: "",
+  
   form: {
     username: {
       status: false,
@@ -8,11 +10,13 @@ var validator = {
     },
     password: {
       status: false,
-      errorMessage1: '密码格式有误'
+      errorMessage1: '密码格式有误',
+      errorMessage2: '密码格式有误'
     },
     repeatpass: {
       status: false,
-      errorMessage1: '两次密码不一致'
+      errorMessage1: '两次密码不一致',
+      errorMessage2: '两次密码不一致'
     },
     email: {
       status: false,
@@ -22,15 +26,20 @@ var validator = {
   },
 
   isUsernameValid: function(username) {
-    return /^[a-zA-Z][a-zA-Z0-9_]{5,18}$/.test(username);
+    return this.form.username.status = /^[a-zA-Z][a-zA-Z0-9_]{5,18}$/.test(username);
   },
 
   isPasswordValid: function(password) {
-    return /^[0-9a-zA-Z_-]{6,12}$/.test(password);
+    this.password = password;
+    return this.form.password.status = /^[0-9a-zA-Z_-]{6,12}$/.test(password);
   },
 
   isEmailValid: function(email) {
-    return /^[a-zA-Z_\-]+@([a-zA-Z_\-]+\.)+[a-zA-Z]{2,4}$/.test(email);
+    return this.form.email.status = /^[a-zA-Z_\-]+@([a-zA-Z_\-]+\.)+[a-zA-Z]{2,4}$/.test(email);
+  },
+
+  isRepeatpassValid: function(repeatpass) {
+    return this.form.repeatpass.status = repeatpass == this.password;
   },
 
   isFieldValid: function(fieldname, value) {
@@ -49,7 +58,7 @@ var validator = {
   getErrorMessage2: function(fieldname) {
     return this.form[fieldname].errorMessage2;
   }
-}
+};
 
 if (typeof module == 'object') { // 服务端共享
   module.exports = validator;

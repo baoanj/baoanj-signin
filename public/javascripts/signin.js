@@ -7,7 +7,7 @@ $(function() {
         if ($(this).val() == "") {
           $("#err_username").text("请输入用户名");
         } else {
-          $.post('/validate-username', { username: $(this).val() }, function(data, status) {
+          $.post('/user/validate-username', { username: $(this).val() }, function(data, status) {
             if (status == 'success') {
               if (data.isExisted) {
                 $("#err_username").text("");

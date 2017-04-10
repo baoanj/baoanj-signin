@@ -3,7 +3,7 @@ extends signup_layout
 block content
   #main_content
     h1 用户注册
-    form#register_form(action='/signup', method='post')
+    form#register_form(action='/user/signup', method='post')
       input#username(name='username', type='text', placeholder='用户名', maxlength='18', value=user.username)
       p.tips 用户名为6~18位英文字母、数字或下划线，必须以英文字母开头
       p#err_username.error!= error.username
@@ -23,4 +23,7 @@ block content
       button#reset(type='reset') 重置
       button#register(type='submit') 注册
     p#switch 已有账号？
-      a(href='/signin', title='登录') 登录
+      a(href='/user/signin', title='登录') 登录
+  script(type='text/javascript', src='/javascripts/jquery.js')
+  script(type='text/javascript', src='/javascripts/signup.js')
+  script(type='text/javascript', src='/javascripts/validator.js')

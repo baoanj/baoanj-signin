@@ -3,18 +3,21 @@
 /**
  * Module dependencies.
  */
-
+var http = require('http');
+var debug = require('debug')('baoanj-signin:server');
 var MongoClient = require('mongodb').MongoClient;
 
 // Connection URL
-var url = 'mongodb://localhost:27017/signin';
-// Use connect method to connect to the Server
-MongoClient.connect(url, function(err, db) {
-  console.log("Connected mongoDB correctly to server");
-  var app = require('../app')(db);
-  var debug = require('debug')('baoanj-signin:server');
-  var http = require('http');
+var momgoUrl = 'mongodb://localhost:27017/signin';
 
+// Use connect method to connect to the Server
+MongoClient.connect(momgoUrl).catch(function(error) {
+  debug("Connect to mongodb " + momgoUrl + " was failed with error: ", error);
+}).then(function(db) {
+  console.log("Connected mongoDB correctly to server");
+
+  var app = require('../app')(db);
+  
   /**
    * Get port from environment and store in Express.
    */

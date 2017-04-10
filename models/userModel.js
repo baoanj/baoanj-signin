@@ -1,3 +1,4 @@
+var debug = require('debug')('baoanj-signin:user');
 var bcrypt = require('bcrypt');
 
 module.exports = function(db) {
@@ -6,25 +7,40 @@ module.exports = function(db) {
   var collection = db.collection('users');
 
   return {
-    insertUser: function(user, callback) {
-      collection.insert(user, function(err, result) {
-        callback(result);
+    insertUser: function(user) {
+      return bcrypt.hash(user.password, 10).then(function(hash) {
+        user.password = hash;
+        delete user.repeatpass;
+        return collection.insert(user).then(function(result) {
+          console.log(user.username + ' registed successfully!');
+          return Promise.resolve(user);
+        });
       });
     },
 
-    findUser: function(username, callback) {
-      collection.findOne({ 'username': username }, function(err, result) {
-        callback(result);
-      });
-    },
-
-    findAllUser: function(callback) {
-      collection.find({}).toArray(function(err, result) {
-        var users = {};
-        for (var i = 0; i < result.length; i++) {
-          users[result[i].username] = result[i];
+    findUser: function(username, password) {
+      return collection.findOne({ username: username }).then(function(user) {
+        if (user) {
+          return bcrypt.compare(password, user.password).then(function(res) {
+            if (res) {
+              return Promise.resolve(user);
+            } else {
+              return Promise.reject({ password: '密码错误' });
+            }
+          });
+        } else {
+          return Promise.reject({ password: '用户名不存在' });
         }
-        callback(users);
+      });
+    },
+
+    findAllUser: function() {
+      return collection.find({}).toArray().then(function(docs) {
+        var users = {};
+        for (var i = 0; i < docs.length; i++) {
+          users[docs[i].username] = docs[i];
+        }
+        return Promise.resolve(users);
       });
     },
 
@@ -39,9 +55,9 @@ module.exports = function(db) {
       return users.hasOwnProperty(username);
     },
 
-    checkSignupUser: function(user, callback) {
+    checkSignupUser: function(user) {
       var that = this;
-      this.findAllUser(function(users) {
+      return this.findAllUser().then(function(users) {
         var err_messages = {};
         if (!validator.isUsernameValid(user['username'])) {
           err_messages['username'] = validator.getErrorMessage1('username');
@@ -61,26 +77,11 @@ module.exports = function(db) {
         if (user['password'] != user['repeatpass']) {
           err_messages['repeatpass'] = validator.getErrorMessage1('repeatpass');
         }
-        callback(err_messages);
-      });
-    },
-
-    checkSigninUser: function(user, callback) {
-      var that = this;
-      this.findAllUser(function(users) {
-        var err_login = null;
-        if (!that.isUsernameExisted(users, user.username)) {
-        	err_login = { username: '用户名不存在' };
-        	callback(err_login);
-        	return;
+        if (Object.keys(err_messages).length > 0) {
+          return Promise.reject(err_messages);
+        } else {
+          return Promise.resolve(user);
         }
-        bcrypt.compare(user.password, users[user.username].password).then(function(res) {
-          if (!res) {
-            err_login = { password: '密码错误' };
-          }
-          callback(err_login);
-          return;
-        });
       });
     }
   };

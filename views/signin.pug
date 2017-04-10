@@ -3,7 +3,7 @@ extends signin_layout
 block content
   #main_content
     h1 用户登录
-    form#login_form(action='/signin', method='post')
+    form#login_form(action='/user/signin', method='post')
       input#username(name='username', type='text', placeholder='用户名', maxlength='18', value=user.username)
       p#err_username.error!= error.username
 
@@ -13,4 +13,7 @@ block content
       button#reset(type='reset') 重置
       button#login(type='submit') 登录
     p#switch 还没有账号？
-      a(href='/signup', title='注册') 去注册
+      a(href='/user/signup', title='注册') 去注册
+  script(type='text/javascript', src='/javascripts/jquery.js')
+  script(type='text/javascript', src='/javascripts/signin.js')
+  script(type='text/javascript', src='/javascripts/validator.js')

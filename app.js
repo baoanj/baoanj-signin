@@ -1,15 +1,16 @@
-﻿module.exports = function(db) {
-  var express = require('express');
-  var path = require('path');
-  var favicon = require('serve-favicon');
-  var logger = require('morgan');
-  var cookieParser = require('cookie-parser');
-  var bodyParser = require('body-parser');
-  var session = require('express-session');
-  const MongoStore = require('connect-mongo')(session);
-  var debug = require('debug')('baoanj-signin:app');
-  var index = require('./routes/index')(db);
+﻿var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+var debug = require('debug')('baoanj-signin:app');
 
+module.exports = function(db) {
+  var user = require('./routes/user')(db);
+  
   var app = express();
 
   // view engine setup
@@ -24,8 +25,7 @@
   app.use(cookieParser());
   app.use(session({
     store: new MongoStore({
-      url: 'mongodb://127.0.0.1:27017/signin',
-      ttl: 24 * 60 * 60
+      url: 'mongodb://127.0.0.1:27017/signin'
     }),
     resave: true,
     saveUninitialized: true,
@@ -33,7 +33,7 @@
   }));
   app.use(express.static(path.join(__dirname, 'public')));
 
-  app.use('/', index);
+  app.use('/user', user);
 
   // catch 404 and forward to error handler
   app.use(function(req, res, next) {
